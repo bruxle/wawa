@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <title>Igra</title>
+</head>
+
+<body>
+    <h2 id="igrac">Igrač 1</h2>
+
+    <p id="pitanje"></p>
+
+    <input type="radio" id="opcija1" name="opcija" value="0">
+    <label for="opcija1" id="opcija1Label"></label><br>
+    <input type="radio" id="opcija2" name="opcija" value="1">
+    <label for="opcija2" id="opcija2Label"></label><br>
+    <input type="radio" id="opcija3" name="opcija" value="2">
+    <label for="opcija3" id="opcija3Label"></label><br><br>
+
+    <input type="button" value="Odgovori" id="odg"><br><br>
+    <p id="tocno"></p><br>
+    <input type="button" value="Ponovo pokrenite igru" id="ponovo">
+
+    <script>
+        $(document).ready(function () {
+            $broj_igraca = localStorage.getItem("broj_igraca");
+            $i = 1;
+            $("#ponovo").click(function () {
+                if (confirm("Jeste li sigurni?") == true) {
+                    $(location).prop('href', 'index.html')
+                }
+            })
+
+            const pitanja = [
+                {
+                    pitanje: "Koji je glavni grad Francuske?",
+                    opcije: ["Pariz", "Madrid", "Rim"],
+                    odgovor: "0"
+                },
+                {
+                    pitanje: "Koji je najveći planet u našem solarnom sustavu?",
+                    opcije: ["Jupiter", "Saturn", "Neptun"],
+                    odgovor: "0"
+                },
+                {
+                    pitanje: "Koja je najmanja država u svijetu?",
+                    opcije: ["Monako", "Vatikan", "San Marino"],
+                    odgovor: "1"
+                },
+                {
+                    pitanje: "Koje je mlijeko najmasnije?",
+                    opcije: ["Kravlje", "Kozije", "Ovčje"],
+                    odgovor: "2"
+                },
+                {
+                    pitanje: "Svjetski dan zdravlja slavi se:",
+                    opcije: ["7. svibnja", "7. travnja", "7. lipnja"],
+                    odgovor: "1"
+                },
+                {
+                    pitanje: "Svjetski dan zagrljaja slavimo:",
+                    opcije: ["21. svibnja", "21. ožujka", "21. siječnja"],
+                    odgovor: "2"
+                }
+            ];
+
+            const opcija1 = $("#opcija1Label");
+            const opcija2 = $("#opcija2Label");
+            const opcija3 = $("#opcija3Label");
+            $trenutnoPitanje = 0;
+            $score1 = 0;
+            $score2 = 0;
+            $score3 = 0;
+
+            function pokaziPitanje() {
+                const question = pitanja[$trenutnoPitanje];
+                $("#pitanje").text(question.pitanje);
+                opcija1.text(question.opcije[0]);
+                opcija2.text(question.opcije[1]);
+                opcija3.text(question.opcije[2]);
+            }
+
+            pokaziPitanje();
+
+            $("#odg").click(function () {
+                $odgovor = document.querySelector('input[name="opcija"]:checked');
+
+                if ($odgovor.value == pitanja[$trenutnoPitanje].odgovor) {
+                    if ($i == 1) {
+                        $score1++;
+                        $("#tocno").text(`Točno. Igrač 1 ima ${$score1} bodova.`)
+                    } else if ($i == 2) {
+                        $score2++;
+                        $("#tocno").text(`Točno. Igrač 2 ima ${$score2} bodova.`)
+                    }
+                    else if ($i == 3) {
+                        $score3++;
+                        $("#tocno").text(`Točno. Igrač 3 ima ${$score3} bodova.`)
+                    }
+                } else {
+                    if ($i == 1) {
+                        $("#tocno").text(`Netočno. Igrač 1 ima ${$score1} bodova.`)
+                    } else if ($i == 2) {
+                        $("#tocno").text(`Netočno. Igrač 2 ima ${$score2} bodova.`)
+                    }
+                    else if ($i == 3) {
+                        $("#tocno").text(`Netočno. Igrač 3 ima ${$score3} bodova.`)
+                    }
+                }
+                promijeni();
+                $("#igrac").text(`Igrač ${$i}`);
+            });
+
+            function promijeni() {
+                if ($trenutnoPitanje == (pitanja.length - 1)) {
+                    $("odg").disabled = true;
+                    if ($score1 > $score2 && $score1 > $score3) {
+                        $pobjednik = `Pobjednik je Igrač 1 sa ${$score1} bodova.`;
+                    }
+                    else if ($score2 > $score1 && $score2 > $score3) {
+                        $pobjednik = `Pobjednik je Igrač 2 sa ${$score2} bodova.`;
+                    }
+                    else if ($score3 > $score1 && $score3 > $score2) {
+                        $pobjednik = `Pobjednik je Igrač 3 sa ${$score3} bodova.`;
+                    }
+                    else {
+                        $pobjednik = "Izjednačeno je.";
+                    }
+                    $("#tocno").text(`${$pobjednik}`)
+                } else {
+                    $i++;
+                    if ($i > $broj_igraca) {
+                        $i = 1;
+                    }
+                    $odgovor.checked = false;
+                    $trenutnoPitanje++;
+                    pokaziPitanje();
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>
